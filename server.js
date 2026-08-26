@@ -1,12 +1,8 @@
-const express = require ('express');
+const express = require('express');
+const webhookRoutes = require('./routes/webhook');
+
 const app = express();
 app.use(express.json());
+app.use('/webhook', webhookRoutes);
 
-app.post('/webhook/razorpay', (req, res) => {
-    console.log('webhook receiced:', JSON.stringify(req.body, null, 2));
-    res.status(200).send('OK');
-});
-
-app.listen(3000, ()=> console.log('Server running on port 3000'));
-
-    
+app.listen(process.env.PORT || 3000, () => console.log('Server running LOVE'));
