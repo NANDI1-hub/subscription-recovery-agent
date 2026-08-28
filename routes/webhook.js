@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { classifyEvent } = require('../controllers/classifier');
 const { decideAction } = require('../controllers/decision');
-const Transaction = require('../models.js/Transaction');
+const Transaction = require('../models/Transaction.js');
 
 router.post('/razorpay', async (req, res) => {
   const event = req.body.event;
