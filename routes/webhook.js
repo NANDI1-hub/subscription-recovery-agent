@@ -22,6 +22,10 @@ router.post('/razorpay', async (req, res) => {
     payload?.subscription?.entity?.notify_info?.notify_email ||
     null;
 
+
+    // Respond to Razorpay immediately — don't make it wait on email/DB
+   res.status(200).send('OK');
+
   try {
     await Transaction.create({
       event,
