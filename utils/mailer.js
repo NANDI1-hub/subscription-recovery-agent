@@ -1,16 +1,6 @@
-const nodemailer = require('nodemailer');
-const dns = require('dns');
+const { Resend } = require('resend');
 
-// Force IPv4 lookups instead of IPv6 (fixes ENETUNREACH on some hosts like Render free tier)
-dns.setDefaultResultOrder('ipv4first');
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendRecoveryEmail(toEmail, subject, message) {
   if (!toEmail) {
@@ -19,11 +9,11 @@ async function sendRecoveryEmail(toEmail, subject, message) {
   }
 
   try {
-    await transporter.sendMail({
-      from: `"Subscription Recovery" <${process.env.GMAIL_USER}>`,
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
       to: toEmail,
       subject: subject,
-      text: message,
+      html: `<p>${message}</p>`,
     });
     console.log('Recovery email sent to:', toEmail);
   } catch (err) {
