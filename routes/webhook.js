@@ -22,9 +22,7 @@ router.post('/razorpay', async (req, res) => {
     payload?.subscription?.entity?.notify_info?.notify_email ||
     null;
 
-
-    // Respond to Razorpay immediately — don't make it wait on email/DB
-   res.status(200).send('OK');
+  res.status(200).send('OK');
 
   try {
     await Transaction.create({
@@ -45,8 +43,6 @@ router.post('/razorpay', async (req, res) => {
   if (decision.action !== 'none') {
     await sendRecoveryEmail(customerEmail, 'Action Needed: Your Subscription Payment', decision.message);
   }
-
-  res.status(200).send('OK');
 });
 
 module.exports = router;
