@@ -2,149 +2,240 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Subscription Recovery Agent — Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscription Recovery — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --ink: #3d2b22;
+    --ink-soft: #8a6f5f;
+    --card: #fffaf3;
+    --card-line: #f0dcc8;
+    --forest: #3c6e51;
+    --forest-bg: #e3efe4;
+    --wine: #9c4a3f;
+    --wine-bg: #f6e2dd;
+    --mustard: #a3711c;
+    --mustard-bg: #f8ecd6;
+    --plum: #6b5077;
+    --plum-bg: #ece4ef;
+  }
   * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #0f1117;
-    color: #e5e7eb;
-    margin: 0;
-    padding: 40px 24px;
+    font-family: 'Work Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 60% 45% at 85% -5%, #ffe1b8 0%, transparent 60%),
+      linear-gradient(155deg, #ffd8a8 0%, #ffb894 38%, #ff9d8a 68%, #ffc9a3 100%);
+    padding: 56px 28px 90px;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+
+  .top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 6px;
   }
   h1 {
-    font-size: 22px;
+    font-family: 'Fraunces', serif;
+    font-size: 34px;
     font-weight: 600;
-    margin-bottom: 4px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--card-line);
+    color: var(--forest);
+    padding: 9px 16px 9px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 2px 10px rgba(120, 70, 40, 0.08);
+    white-space: nowrap;
+  }
+  .status-chip .mark {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--forest);
+    flex-shrink: 0;
   }
   .subtitle {
-    color: #9ca3af;
-    font-size: 14px;
-    margin-bottom: 32px;
+    color: #6b4a38;
+    font-size: 15.5px;
+    max-width: 560px;
+    line-height: 1.5;
+    margin: 14px 0 40px;
   }
+
   .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
-    margin-bottom: 40px;
+    margin-bottom: 48px;
   }
   .stat-card {
-    background: #171a23;
-    border: 1px solid #262b38;
-    border-radius: 12px;
-    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--card-line);
+    border-radius: 18px;
+    padding: 22px 24px;
+    box-shadow: 0 4px 18px rgba(120, 70, 40, 0.07);
   }
   .stat-label {
-    color: #9ca3af;
-    font-size: 13px;
-    margin-bottom: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
   }
   .stat-value {
-    font-size: 28px;
-    font-weight: 700;
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
-  .stat-value.green { color: #4ade80; }
-  .stat-value.red { color: #f87171; }
-  .stat-value.yellow { color: #fbbf24; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #171a23;
-    border-radius: 12px;
+  .stat-value.forest { color: var(--forest); }
+  .stat-value.wine { color: var(--wine); }
+  .stat-value.mustard { color: var(--mustard); }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .table-card {
+    background: linear-gradient(150deg, #3f2a24 0%, #57312a 100%);
+    clip-path: polygon(28px 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%, 0 28px);
     overflow: hidden;
-    border: 1px solid #262b38;
+    box-shadow: 0 10px 30px rgba(70, 35, 25, 0.25);
   }
+  .table-scroll {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .table-scroll::-webkit-scrollbar { display: none; }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
   th, td {
     text-align: left;
-    padding: 12px 16px;
-    font-size: 13px;
-    border-bottom: 1px solid #262b38;
+    padding: 15px 20px;
+    font-size: 13.5px;
+    border-bottom: 1px solid rgba(255, 232, 210, 0.1);
+    white-space: nowrap;
   }
   th {
-    color: #9ca3af;
+    color: #e8c9ad;
     font-weight: 500;
-    background: #1c2029;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
+  td { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #fdf0e2; }
   tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255, 232, 210, 0.05); }
+
   .badge {
     display: inline-block;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 11px;
+    padding: 5px 13px;
+    border-radius: 6px;
+    font-size: 11.5px;
     font-weight: 600;
+    font-family: 'Work Sans', sans-serif;
   }
-  .badge.retry-later { background: #422006; color: #fbbf24; }
-  .badge.needs-new-method { background: #451a03; color: #fb923c; }
-  .badge.escalate { background: #450a0a; color: #f87171; }
-  .badge.success { background: #052e16; color: #4ade80; }
-  .badge.unknown { background: #1e293b; color: #94a3b8; }
-  .recovered-yes { color: #4ade80; }
-  .recovered-no { color: #f87171; }
-  .section-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 12px;
-  }
+  .badge.retry-later { background: rgba(255, 200, 120, 0.18); color: #ffcf87; }
+  .badge.needs-new-method { background: rgba(255, 150, 130, 0.18); color: #ffab97; }
+  .badge.escalate { background: rgba(255, 120, 100, 0.22); color: #ff9d85; }
+  .badge.success { background: rgba(130, 220, 170, 0.18); color: #93e2b3; }
+  .badge.unknown { background: rgba(200, 170, 220, 0.18); color: #d3b7e6; }
+
+  .recovered-yes { color: #93e2b3; font-weight: 600; }
+  .recovered-no { color: #ff9d85; font-weight: 600; }
+
   .empty {
     text-align: center;
-    color: #6b7280;
-    padding: 40px;
+    color: #e8c9ad;
+    padding: 52px 20px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14.5px;
   }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<h1>Subscription Recovery Agent</h1>
-<div class="subtitle">Live dashboard — payment failures detected and handled automatically</div>
+  <div class="top-row">
+    <h1>Subscription Recovery</h1>
+    <div class="status-chip"><span class="mark"></span>Agent on duty</div>
+  </div>
+  <p class="subtitle">Every failed payment is caught here first, sorted by what it needs, and followed up automatically.</p>
 
-<div class="stats-grid" id="stats"></div>
+  <div class="stats-grid" id="stats"></div>
 
-<div class="section-title">Recent Events</div>
-<table>
-  <thead>
-    <tr>
-      <th>Time</th>
-      <th>Event</th>
-      <th>Bucket</th>
-      <th>Customer</th>
-      <th>Amount</th>
-      <th>Recovered</th>
-    </tr>
-  </thead>
-  <tbody id="tx-body"></tbody>
-</table>
+  <div class="section-title">Recent events</div>
+  <div class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Event</th>
+            <th>Category</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Recovered</th>
+          </tr>
+        </thead>
+        <tbody id="tx-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 
 <script>
 async function load() {
   const statsRes = await fetch('/api/stats');
   const stats = await statsRes.json();
 
-  const statsHtml = `
+  document.getElementById('stats').innerHTML = `
     <div class="stat-card">
-      <div class="stat-label">Total Events</div>
+      <div class="stat-label">Total events</div>
       <div class="stat-value">${stats.total}</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Recovered</div>
-      <div class="stat-value green">${stats.recovered}</div>
+      <div class="stat-value forest">${stats.recovered}</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Recovery Rate</div>
-      <div class="stat-value yellow">${stats.recoveryRate}%</div>
+      <div class="stat-label">Recovery rate</div>
+      <div class="stat-value mustard">${stats.recoveryRate}%</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Amount at Risk</div>
-      <div class="stat-value red">₹${(stats.amountAtRisk / 100).toLocaleString('en-IN')}</div>
+      <div class="stat-label">Amount at risk</div>
+      <div class="stat-value wine">₹${(stats.amountAtRisk / 100).toLocaleString('en-IN')}</div>
     </div>
   `;
-  document.getElementById('stats').innerHTML = statsHtml;
 
   const txRes = await fetch('/api/transactions');
   const transactions = await txRes.json();
 
   if (!transactions.length) {
     document.getElementById('tx-body').innerHTML =
-      '<tr><td colspan="6" class="empty">No events yet — trigger a test payment to see data here.</td></tr>';
+      '<tr><td colspan="6" class="empty">No events yet. Trigger a test payment to see the agent in action.</td></tr>';
     return;
   }
 
@@ -161,8 +252,7 @@ async function load() {
 }
 
 load();
-setInterval(load, 10000); // auto-refresh every 10s
+setInterval(load, 10000);
 </script>
-
 </body>
 </html>
