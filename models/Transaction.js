@@ -9,6 +9,7 @@ const transactionSchema = new mongoose.Schema({
   subscriptionId: String,
   customerEmail: String,
   amount: Number,
+  recovered: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

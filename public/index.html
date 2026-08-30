@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Subscription Recovery Agent — Dashboard</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f1117;
+    color: #e5e7eb;
+    margin: 0;
+    padding: 40px 24px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: #9ca3af;
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .stat-card {
+    background: #171a23;
+    border: 1px solid #262b38;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .stat-label {
+    color: #9ca3af;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .stat-value.green { color: #4ade80; }
+  .stat-value.red { color: #f87171; }
+  .stat-value.yellow { color: #fbbf24; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #171a23;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #262b38;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid #262b38;
+  }
+  th {
+    color: #9ca3af;
+    font-weight: 500;
+    background: #1c2029;
+  }
+  tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge.retry-later { background: #422006; color: #fbbf24; }
+  .badge.needs-new-method { background: #451a03; color: #fb923c; }
+  .badge.escalate { background: #450a0a; color: #f87171; }
+  .badge.success { background: #052e16; color: #4ade80; }
+  .badge.unknown { background: #1e293b; color: #94a3b8; }
+  .recovered-yes { color: #4ade80; }
+  .recovered-no { color: #f87171; }
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .empty {
+    text-align: center;
+    color: #6b7280;
+    padding: 40px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Subscription Recovery Agent</h1>
+<div class="subtitle">Live dashboard — payment failures detected and handled automatically</div>
+
+<div class="stats-grid" id="stats"></div>
+
+<div class="section-title">Recent Events</div>
+<table>
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Event</th>
+      <th>Bucket</th>
+      <th>Customer</th>
+      <th>Amount</th>
+      <th>Recovered</th>
+    </tr>
+  </thead>
+  <tbody id="tx-body"></tbody>
+</table>
+
+<script>
+async function load() {
+  const statsRes = await fetch('/api/stats');
+  const stats = await statsRes.json();
+
+  const statsHtml = `
+    <div class="stat-card">
+      <div class="stat-label">Total Events</div>
+      <div class="stat-value">${stats.total}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Recovered</div>
+      <div class="stat-value green">${stats.recovered}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Recovery Rate</div>
+      <div class="stat-value yellow">${stats.recoveryRate}%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Amount at Risk</div>
+      <div class="stat-value red">₹${(stats.amountAtRisk / 100).toLocaleString('en-IN')}</div>
+    </div>
+  `;
+  document.getElementById('stats').innerHTML = statsHtml;
+
+  const txRes = await fetch('/api/transactions');
+  const transactions = await txRes.json();
+
+  if (!transactions.length) {
+    document.getElementById('tx-body').innerHTML =
+      '<tr><td colspan="6" class="empty">No events yet — trigger a test payment to see data here.</td></tr>';
+    return;
+  }
+
+  document.getElementById('tx-body').innerHTML = transactions.map(tx => `
+    <tr>
+      <td>${new Date(tx.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</td>
+      <td>${tx.event}</td>
+      <td><span class="badge ${tx.bucket}">${tx.bucket}</span></td>
+      <td>${tx.customerEmail || '—'}</td>
+      <td>₹${tx.amount ? (tx.amount / 100).toLocaleString('en-IN') : '—'}</td>
+      <td class="${tx.recovered ? 'recovered-yes' : 'recovered-no'}">${tx.recovered ? 'Yes' : 'No'}</td>
+    </tr>
+  `).join('');
+}
+
+load();
+setInterval(load, 10000); // auto-refresh every 10s
+</script>
+
+</body>
+</html>
