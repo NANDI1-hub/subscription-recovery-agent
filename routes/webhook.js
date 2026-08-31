@@ -22,6 +22,13 @@ router.post('/razorpay', async (req, res) => {
     payload?.subscription?.entity?.notify_info?.notify_email ||
     null;
 
+  const errorDetails = {
+    code: payload?.payment?.entity?.error_code || null,
+    description: payload?.payment?.entity?.error_description || null,
+    reason: payload?.payment?.entity?.error_reason || null,
+    source: payload?.payment?.entity?.error_source || null,
+  };
+
   res.status(200).send('OK');
 
   try {
@@ -29,6 +36,10 @@ router.post('/razorpay', async (req, res) => {
       event,
       bucket: classification.bucket,
       reason: classification.reason,
+      errorCode: errorDetails.code,
+      errorDescription: errorDetails.description,
+      errorReason: errorDetails.reason,
+      errorSource: errorDetails.source,
       action: decision.action,
       message: decision.message,
       subscriptionId: payload?.subscription?.entity?.id || null,
@@ -40,19 +51,9 @@ router.post('/razorpay', async (req, res) => {
     console.error('Failed to save transaction:', err.message);
   }
 
-  if (decision.action !== 'none') {
-    await sendRecoveryEmail(customerEmail, 'Action Needed: Your Subscription Payment', decision.message);
+  if (decision.action !== 'none' && customerEmail) {
+    await sendRecoveryEmail(customerEmail, decision.subject, decision.message);
   }
-
-  const errorDetails = 
-  {
-    code: payload?.payment?.entity?.error_code || null,
-    description: payload?.payment?.entity?.error_description || null,
-    reason: payload?.payment?.entity?.error_reason || null,
-    source: payload?.payment?.entity?.error_source || null,
-  };
-
-
 });
 
 module.exports = router;
