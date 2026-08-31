@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 
-const transactionSchema = new mongoose.Schema({
+const transactionSchema = new mongoose.Schema
+({
   event: String,
   bucket: String,
   reason: String,
+  errorCode: String,
+  errorDescription: String,
+  errorReason: String,
+  errorSource: String, 
   action: String,
   message: String,
   subscriptionId: String,

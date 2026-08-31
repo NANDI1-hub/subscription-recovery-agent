@@ -43,6 +43,16 @@ router.post('/razorpay', async (req, res) => {
   if (decision.action !== 'none') {
     await sendRecoveryEmail(customerEmail, 'Action Needed: Your Subscription Payment', decision.message);
   }
+
+  const errorDetails = 
+  {
+    code: payload?.payment?.entity?.error_code || null,
+    description: payload?.payment?.entity?.error_description || null,
+    reason: payload?.payment?.entity?.error_reason || null,
+    source: payload?.payment?.entity?.error_source || null,
+  };
+
+
 });
 
 module.exports = router;
