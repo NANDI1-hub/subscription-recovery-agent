@@ -30,6 +30,10 @@ router.post('/razorpay', async (req, res) => {
   };
   console.log('Error Details:', errorDetails);
 
+  if (errorDetails.errorSource) {
+   classification.reason += ` (confirmed source: ${errorDetails.errorSource})`;
+  }
+
   res.status(200).send('OK');
 
   try {
@@ -52,9 +56,13 @@ router.post('/razorpay', async (req, res) => {
     console.error('Failed to save transaction:', err.message);
   }
 
-  if (decision.action !== 'none' && customerEmail) {
-    await sendRecoveryEmail(customerEmail, decision.subject, decision.message);
-  }
+    if (decision.action !== 'none' && customerEmail) {
+      const specificReason = errorDetails.errorDescription
+        ? `${errorDetails.errorDescription} `
+        : '';
+      const emailBody = `${specificReason}${decision.message}`;
+      await sendRecoveryEmail(customerEmail, decision.subject, emailBody);
+    }
 });
 
 module.exports = router;
