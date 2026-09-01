@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { classifyEvent } = require('../controllers/classifier');
-const { decideAction } = require('../controllers/decision');
+const { decideAction, buildEmailBody } = require('../controllers/decision');
 const Transaction = require('../models/Transaction');
 const { sendRecoveryEmail } = require('../utils/mailer');
 
@@ -57,10 +57,8 @@ router.post('/razorpay', async (req, res) => {
   }
 
     if (decision.action !== 'none' && customerEmail) {
-      const specificReason = errorDetails.errorDescription
-        ? `${errorDetails.errorDescription} `
-        : '';
-      const emailBody = `${specificReason}${decision.message}`;
+
+      const emailBody = buildEmailBody(errorDetails.errorDescription, decision.message);
       await sendRecoveryEmail(customerEmail, decision.subject, emailBody);
     }
 });
