@@ -28,7 +28,7 @@ router.post('/razorpay', async (req, res) => {
     reason: payload?.payment?.entity?.error_reason || null,
     source: payload?.payment?.entity?.error_source || null,
   };
-  console.log('Error Details:', errorDetails);
+  console.log('Diagnosis:', errorDetails);
 
   if (errorDetails.errorSource) {
    classification.reason += ` (confirmed source: ${errorDetails.errorSource})`;
