@@ -1,22 +1,24 @@
-Subscription Recovery Agent An automated agent that detects failed subscription payments in real time, classifies the failure, logs it, and notifies the customer — with zero manual intervention.
+**Subscription Recovery Agent**
+An automated agent that detects failed subscription payments in real time, classifies the failure, logs it, and notifies the customer — with zero manual intervention.
 
 Live dashboard: https://subscription-recovery-agent.onrender.com/
 
-The Problem
+**The Problem**
 
 When a recurring subscription payment fails, most systems just... stop. The business doesn't know why it failed, the customer isn't told, and revenue quietly leaks away. This agent closes that gap automatically.
-
- What It Does
+**What It Does**
 
 1. Listens for real-time payment events from Razorpay via webhooks.
 2. Classifies each failure into a category (retry-later, needs-new-method, escalate) based on the event type.
 3. Diagnoses the root cause using Razorpay's error metadata (error code, description, source — e.g. bank decline, gateway timeout, international-transaction block).
 4. Acts by automatically emailing the customer with a relevant, category-specific message.
 5. Logs every event to a database with full diagnostic detail, visible on a live dashboard.
-6. This is a rule-based automation agent: it perceives an event, reasons about it using deterministic classification logic, and acts autonomously — without a human in the loop. Rule-based (rather than LLM-based) reasoning was chosen deliberately, since predictable, auditable behavior matters more than conversational flexibility when money is involved.
 
-Architecture
+This is a rule-based automation agent: it perceives an event, reasons about it using deterministic classification logic, and acts autonomously — without a human in the loop. Rule-based (rather than LLM-based) reasoning was chosen deliberately, since predictable, auditable behavior matters more than conversational flexibility when money is involved.
 
+**Architecture**
+
+```
 Razorpay (payment event)
         │
         ▼
@@ -34,11 +36,19 @@ Razorpay (payment event)
         │
         ▼
   Dashboard (live stats + recent events)
+```
 
+**Tech Stack**
+Backend: Node.js, Express
+Database: MongoDB (Atlas)
+Email: Resend API
+Hosting: Render
+Payment provider: Razorpay (webhooks + subscriptions)
+Frontend: Vanilla HTML/CSS/JS dashboard, served statically
 
-Tech Stack Backend: Node.js, Express Database: MongoDB (Atlas) Email: Resend API Hosting: Render Payment provider: Razorpay (webhooks + subscriptions) Frontend: Vanilla HTML/CSS/JS dashboard, served statically
+**Project Structure**
 
-Project Structure
+```
 ├── server.js                 # App entry point
 ├── config/
 │   ├── db.js                 # MongoDB connection
@@ -55,11 +65,9 @@ Project Structure
 │   └── mailer.js              # Resend email integration
 └── public/
     └── index.html             # Live dashboard UI
+```    
 
-
-
-How It Works(Step by Step)
-
+**How It Works(Step by Step)**
 1. Razorpay sends a webhook POST to /webhook/razorpay whenever a payment event occurs (e.g. payment.failed, subscription.pending, subscription.cancelled)
 2. classifier.js maps the event name to a bucket and extracts a human-readable reason
 3. decision.js maps that bucket to a concrete action, a customer-facing message, and an email subject line
@@ -74,4 +82,3 @@ How It Works(Step by Step)
 2. Support WhatsApp notifications alongside email
 3. Add a retry-attempt counter and automatic escalation after N failures
 4. Verify a custom sending domain on Resend for production email delivery
-
