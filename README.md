@@ -18,6 +18,7 @@ This is a rule-based automation agent: it perceives an event, reasons about it u
 
 **Architecture**
 
+```
 Razorpay (payment event)
         │
         ▼
@@ -35,6 +36,7 @@ Razorpay (payment event)
         │
         ▼
   Dashboard (live stats + recent events)
+```
 
 **Tech Stack**
 Backend: Node.js, Express
@@ -46,6 +48,7 @@ Frontend: Vanilla HTML/CSS/JS dashboard, served statically
 
 **Project Structure**
 
+```
 ├── server.js                 # App entry point
 ├── config/
 │   ├── db.js                 # MongoDB connection
@@ -62,7 +65,7 @@ Frontend: Vanilla HTML/CSS/JS dashboard, served statically
 │   └── mailer.js              # Resend email integration
 └── public/
     └── index.html             # Live dashboard UI
-
+```
 **How It Works(Step by Step)**
 1. Razorpay sends a webhook POST to /webhook/razorpay whenever a payment event occurs (e.g. payment.failed, subscription.pending, subscription.cancelled)
 2. classifier.js maps the event name to a bucket and extracts a human-readable reason
