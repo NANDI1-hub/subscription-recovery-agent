@@ -65,8 +65,7 @@ Frontend: Vanilla HTML/CSS/JS dashboard, served statically
 │   └── mailer.js              # Resend email integration
 └── public/
     └── index.html             # Live dashboard UI
-```    
-
+```
 **How It Works(Step by Step)**
 1. Razorpay sends a webhook POST to /webhook/razorpay whenever a payment event occurs (e.g. payment.failed, subscription.pending, subscription.cancelled)
 2. classifier.js maps the event name to a bucket and extracts a human-readable reason
