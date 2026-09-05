@@ -1,11 +1,27 @@
-function buildEmailBody(specificReason, coreMessage) {
+function getFaultMessage(source) {
+  switch (source) {
+    case 'customer':
+      return "This appears to be an issue on your end — for example, insufficient funds or an expired card. Please check your payment method.";
+    case 'bank':
+      return "Your bank declined this payment. Please contact your bank for more details, or try a different payment method.";
+    case 'business':
+      return "Your bank or card doesn't support this type of transaction (for example, international payments may be restricted).";
+    case 'gateway':
+    case 'internal':
+      return "This was a temporary issue on our payment processor's end, not related to your account. No action is needed from you right now.";
+    default:
+      return null;
+  }
+}
+
+function buildEmailBody(specificReason, coreMessage, faultSource) {
+  const faultMessage = getFaultMessage(faultSource);
   return `Hi,
 
-${specificReason ? specificReason + '\n\n' : ''}${coreMessage}
+${faultMessage ? faultMessage + '\n\n' : ''}${coreMessage}
 
-If you have any questions, feel free to reply to this email — we're happy to help.
-
-Thanks`;
+Thanks,
+The Subscription Team`;
 }
 
 function decideAction(classification) {

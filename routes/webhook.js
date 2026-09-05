@@ -57,7 +57,7 @@ router.post('/razorpay', async (req, res) => {
   }
 
   if (decision.action !== 'none' && customerEmail) {
-    const emailBody = buildEmailBody(errorDetails.description, decision.message);
+    const emailBody = buildEmailBody(errorDetails.description, decision.message, errorDetails.source);
     await sendRecoveryEmail(customerEmail, decision.subject, emailBody);
   }
 });
