@@ -1,11 +1,24 @@
-const nodemailer = require('nodemailer');
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
-});
+const { Resend } = require('resend');
 
-async function sendRecoveryEmail(to, subject, text) {
-  await transporter.sendMail({ from: process.env.GMAIL_USER, to, subject, text });
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+async function sendRecoveryEmail(toEmail, subject, message) {
+  if (!toEmail) {
+    console.log('No customer email found — skipping email send.');
+    return;
+  }
+
+  try {
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to: toEmail,
+      subject: subject,
+      html: `<p>Hi,</p><p>${message}</p><p>Thanks,<br>The Subscription Team</p>`,
+    });
+    console.log('Recovery email sent to:', toEmail);
+  } catch (err) {
+    console.error('Failed to send email:', err.message);
+  }
 }
 
 module.exports = { sendRecoveryEmail };
