@@ -16,9 +16,7 @@ function classifyEvent(event){
             return  {bucket: 'needs-new-method', reason: 'repeated failures — customer must update payment method' };    
 
         default:
-            return { bucket: 'unknown', reason: `unrecognized event: ${event}` }; 
-
-         
+            return { bucket: 'unknown', reason: `unrecognized event: ${event}` };
     }
 }
 
