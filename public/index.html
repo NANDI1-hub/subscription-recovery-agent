@@ -226,12 +226,13 @@ async function load() {
     </div>
     <div class="stat-card">
       <div class="stat-label">Amount at risk</div>
-      <div class="stat-value wine">₹${(stats.amountAtRisk / 100).toLocaleString('en-IN')}</div>
+      <div class="stat-value wine">₹${Math.round(stats.amountAtRisk / 100).toLocaleString('en-IN')}</div>
     </div>
   `;
 
   const txRes = await fetch('/api/transactions');
-  const transactions = await txRes.json();
+  let transactions = await txRes.json();
+  transactions = transactions.slice(0, 8);
 
   if (!transactions.length) {
     document.getElementById('tx-body').innerHTML =
@@ -245,7 +246,7 @@ async function load() {
       <td>${tx.event}</td>
       <td><span class="badge ${tx.bucket}">${tx.bucket}</span></td>
       <td>${tx.customerEmail || '—'}</td>
-      <td>₹${tx.amount ? (tx.amount / 100).toLocaleString('en-IN') : '—'}</td>
+      <td>₹${tx.amount ? Math.round(tx.amount / 100) : '—'}</td>
       <td class="${tx.recovered ? 'recovered-yes' : 'recovered-no'}">${tx.recovered ? 'Yes' : 'No'}</td>
     </tr>
   `).join('');
