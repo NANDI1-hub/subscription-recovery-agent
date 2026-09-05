@@ -5,7 +5,7 @@ ${specificReason ? specificReason + '\n\n' : ''}${coreMessage}
 
 If you have any questions, feel free to reply to this email — we're happy to help.
 
-THANKS`;
+Thanks`;
 }
 
 function decideAction(classification) {

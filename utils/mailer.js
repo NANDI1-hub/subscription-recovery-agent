@@ -10,10 +10,10 @@ async function sendRecoveryEmail(toEmail, subject, message) {
 
   try {
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'Subscription Recovery <onboarding@resend.dev>',
       to: toEmail,
       subject: subject,
-      html: `<p>Hi,</p><p>${message}</p><p>THANKS</p>`,
+      html: `<p>Hi,</p><p>${message}</p><p>Thanks,<br>The Subscription Team</p>`,
     });
     console.log('Recovery email sent to:', toEmail);
   } catch (err) {
