@@ -13,7 +13,7 @@ async function sendRecoveryEmail(toEmail, subject, message) {
       from: 'Subscription Recovery <onboarding@resend.dev>',
       to: toEmail,
       subject: subject,
-      html: `<p>Hi,</p><p>${message}</p><p>Thanks,<br>The Subscription Team</p>`,
+      html: message.replace(/\n/g, '<br>'),
     });
     console.log('Recovery email sent to:', toEmail);
   } catch (err) {
