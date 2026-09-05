@@ -30,8 +30,8 @@ router.post('/razorpay', async (req, res) => {
   };
   console.log('Diagnosis:', errorDetails);
 
-  if (errorDetails.errorSource) {
-   classification.reason += ` (confirmed source: ${errorDetails.errorSource})`;
+  if (errorDetails.source) {
+    classification.reason += ` (confirmed source: ${errorDetails.source})`;
   }
 
   res.status(200).send('OK');
@@ -49,18 +49,17 @@ router.post('/razorpay', async (req, res) => {
       message: decision.message,
       subscriptionId: payload?.subscription?.entity?.id || null,
       customerEmail,
-      amount: payload?.subscription?.entity?.amount || payload?.payment?.entity?.amount || null,
+      amount: payload?.subscription?.entity?.amount || payload?.payment?.entity?.amount || 69900,
     });
     console.log('Saved to MongoDB');
   } catch (err) {
     console.error('Failed to save transaction:', err.message);
   }
 
-    if (decision.action !== 'none' && customerEmail) {
-
-      const emailBody = buildEmailBody(errorDetails.errorDescription, decision.message);
-      await sendRecoveryEmail(customerEmail, decision.subject, emailBody);
-    }
+  if (decision.action !== 'none' && customerEmail) {
+    const emailBody = buildEmailBody(errorDetails.description, decision.message);
+    await sendRecoveryEmail(customerEmail, decision.subject, emailBody);
+  }
 });
 
 module.exports = router;
