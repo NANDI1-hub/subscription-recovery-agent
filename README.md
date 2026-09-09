@@ -62,7 +62,7 @@ Razorpay (payment event)
 │   ├── classifier.js         # Event → bucket classification
 │   └── decision.js           # Bucket → action, message, email subject
 ├── models/
-│   └── Transaction.js        # Mongoose schema for logged events
+│   └── Transaction.js        # Mongoose schema for logged events (yep)
 ├── routes/
 │   ├── webhook.js            # Razorpay webhook handler
 │   └── dashboard.js          # API endpoints for dashboard stats/data
